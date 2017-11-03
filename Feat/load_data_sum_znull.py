@@ -16,12 +16,11 @@ from transform import Transform
 from sumVar import setFeaturesSumAndVar
 from znull import zNullCount
 
-def main():
+def load_data():
 
     dataCls = DataModelClass()
 
     train_df = dataCls.readTrain()
-    sub_df = dataCls.readSampleSub()
     test_df = dataCls.readTest()
 
     train_df = zNullCount(train_df)
@@ -30,11 +29,14 @@ def main():
     train_df = setFeaturesSumAndVar(train_df)
     test_df = setFeaturesSumAndVar(test_df)
 
-
-
     tr = Transform(train_df, test_df)
     X,y,X_test = tr.excecute()
     print(X.shape,y.shape,X_test.shape)
+
+    return X,y,X_test
+
+def main():
+    load_data()
 
 if __name__ == "__main__":
     main()
