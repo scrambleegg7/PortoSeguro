@@ -5,12 +5,18 @@
 import numpy as np
 import os
 
+from sys import platform
+
 from os.path import join
 
 def setEnv():
 
     envs = {}
-    envs["data_dir"] = "/Users/donchan/Documents/myData/KaggleData/PortoSeguro"
+    if platform == "linux":
+        envs["data_dir"] = "/home/donchan/Documents/myData/KaggleData/PortoSeguro"
+    else:
+        envs["data_dir"] = "/Users/donchan/Documents/myData/KaggleData/PortoSeguro"
+
     envs["train"] = join(envs["data_dir"],"train.csv")
     envs["test"] = join(envs["data_dir"],"test.csv")
 
