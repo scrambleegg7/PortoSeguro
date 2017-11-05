@@ -4,8 +4,8 @@ import numpy as np
 
 from multiprocessing import *
 
-from one_hot import onehot
-from med_mean import med_mean
+from PortoSeguro.Feat.one_hot import onehot
+from PortoSeguro.Feat.med_mean import med_mean
 
 class MulHelper(object):
 
@@ -65,9 +65,10 @@ class Transform(object):
 
     def excecute(self):
 
-        new_train_df = self.multi_transform(self.train_df)
-        new_test_df = self.multi_transform(self.test_df)
-
+        new_train_df = self.transform_df(self.train_df)
+        new_test_df = self.transform_df(self.test_df)
+        #new_train_df = self.multi_transform(self.train_df)
+        #new_test_df = self.multi_transform(self.test_df)
         col = [c for c in new_train_df.columns if c not in ['id','target']]
         col = [c for c in col if not c.startswith('ps_calc_')]
 
