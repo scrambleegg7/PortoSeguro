@@ -25,7 +25,7 @@ import gc
 from numba import jit
 from sklearn.preprocessing import LabelEncoder
 import time
-from datatime import datetime
+from datetime import datetime
 
 from PortoSeguro.DataModelClass import DataModelClass
 from PortoSeguro.gini import eval_gini
@@ -210,7 +210,8 @@ model = XGBClassifier(
                         objective="binary:logistic",
                         learning_rate=LEARNING_RATE,
                         subsample=.8,
-                        min_child_weight=.77,
+#                        min_child_weight=.77, Oct. 30th
+                        min_child_weight=.6,
                         colsample_bytree=.8,
                         scale_pos_weight=1.6,
                         gamma=10,
@@ -258,11 +259,13 @@ for i, (train_index, test_index) in enumerate(kf.split(train_df)):
     y_valid_pred.iloc[test_index] = pred
 
     # Accumulate test set predictions
-    y_test_pred += fit_model.predict_proba(X_test)[:,1]
+    probability = fit_model.predict_proba(X_test)[:,1]
+    y_test_pred += np.log(1. / ( 1. - probability))
 
     del X_test, X_train, X_valid, y_train
 
 y_test_pred /= K  # Average test set predictions
+y_test_pred = 1. / ( 1 + np.exp( -y_test_pred ) )
 
 print( "\nGini for full training set:" )
 eval_gini(y, y_valid_pred)

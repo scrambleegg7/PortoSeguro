@@ -65,8 +65,13 @@ def target_encode(trn_series=None,    # Revised to encode validation series
     return add_noise(ft_trn_series, noise_level), add_noise(ft_val_series, noise_level), add_noise(ft_tst_series, noise_level)
 
 
-def smoothing(train_df,test_df):
+def smoothing():
 
+    dataCls = DataModelClass()
+
+    train_df = dataCls.readTrain()
+    sub_df = dataCls.readSampleSub()
+    test_df = dataCls.readTest()
 
     train_features = [
         "ps_car_13",  #            : 1571.65 / shadow  609.23
@@ -131,70 +136,27 @@ def smoothing(train_df,test_df):
 
         train_features.append(name1)
 
-    print("train nan fields ....")
-    train_df = train_df.replace(-1,np.nan)
-    for c in train_df.columns.tolist():
-        if c in ["id","target"]:
-            continue
-        else:
-
-            nan_val = train_df[c].apply(lambda x:1 if pd.isnull(x) else 0)
-            if len(  set(nan_val)) > 1:
-
-                train_df[c + "__nan__"] = train_df[c].apply(lambda x:1 if pd.isnull(x) else 0)
-                print( "column %s and nan legth %d" %  (c, len(set(nan_val)) )  )
-
-    for c in train_df.columns:
-        if "__nan__" in c:
-            train_features.append(c)
-
-    print("test nan fields ...")
-    test_df = test_df.replace(-1,np.nan)
-    for c in test_df.columns.tolist():
-        if c in ["id"]:
-            continue
-        else:
-            nan_val = test_df[c].apply(lambda x:1 if pd.isnull(x) else 0)
-            if len(  set(nan_val)) > 1 or c == "ps_car_12":
-                test_df[c + "__nan__"] = test_df[c].apply(lambda x:1 if pd.isnull(x) else 0)
-                print( "column %s and nan legth %d" %  (c, len(set(nan_val)) )  )
-
 
     X = train_df[train_features]
     test_df = test_df[train_features]
-
-
     #f_cats = [f for f in X.columns if "_cat" in f]
 
     y_valid_pred = 0*y
     y_test_pred = 0
 
-
-
-
     return X,y, test_df
-
-
-
 
 def main():
 
-    dataCls = DataModelClass()
-
-    train_df = dataCls.readTrain()
-    sub_df = dataCls.readSampleSub()
-    test_df = dataCls.readTest()
 
 
     X, y, test_df = smoothing(train_df,test_df)
-    print(X.columns.tolist())
+    print("")
+    print(X.shape,y.shape,test_df.shape)
+    #print(X.columns.tolist())
 
-
-
-    # Set up folds
-    #K = 5
-    #kf = KFold(n_splits = K, random_state = 1, shuffle = True)
-    #np.random.seed(0)
+    f_cats = [f for f in X.columns if "_cat" in f]
+    print(f_cats)
 
 
 
