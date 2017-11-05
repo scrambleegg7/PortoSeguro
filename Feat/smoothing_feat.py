@@ -64,14 +64,11 @@ def target_encode(trn_series=None,    # Revised to encode validation series
     ft_tst_series.index = tst_series.index
     return add_noise(ft_trn_series, noise_level), add_noise(ft_val_series, noise_level), add_noise(ft_tst_series, noise_level)
 
+def add_noise(series, noise_level):
+    return series * (1 + noise_level * np.random.randn(len(series)))
 
-def smoothing():
 
-    dataCls = DataModelClass()
-
-    train_df = dataCls.readTrain()
-    sub_df = dataCls.readSampleSub()
-    test_df = dataCls.readTest()
+def smoothing(train_df,test_df):
 
     train_features = [
         "ps_car_13",  #            : 1571.65 / shadow  609.23
@@ -116,8 +113,6 @@ def smoothing():
     ]
 
     # Process data
-    id_test = test_df['id'].values
-    id_train = train_df['id'].values
     y = train_df['target']
 
     start = time.time()
@@ -144,16 +139,13 @@ def smoothing():
     y_valid_pred = 0*y
     y_test_pred = 0
 
-    return X,y, test_df
+    return X, y, test_df
 
 def main():
 
-
-
     X, y, test_df = smoothing(train_df,test_df)
     print("")
-    print(X.shape,y.shape,test_df.shape)
-    #print(X.columns.tolist())
+    print(X.shape, y.shape, test_df.shape)
 
     f_cats = [f for f in X.columns if "_cat" in f]
     print(f_cats)
