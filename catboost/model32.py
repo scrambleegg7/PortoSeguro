@@ -104,12 +104,13 @@ def process2(train,test):
     y_valid_pred = 0.0*y
     y_test_pred = 0
 
+    id_train = train['id'].values
+
     sub=test['id'].to_frame()
     sub['target']=0
 
     train = train.drop(["id","target"],axis=1)
     test = test.drop(["id"],axis=1)
-
 
     cat_feature_inds = []
     cat_unique_thresh = 1000
@@ -166,6 +167,12 @@ def process2(train,test):
 
     print("")
     print("    Gini = %.6f " %  eval_gini(y,y_valid_pred) )
+
+    print("Save validation predictions for stacking/ensembling")
+    val = pd.DataFrame()
+    val['id'] = id_train
+    val['target'] = y_valid_pred.values
+    val.to_csv('output/model31_xgb_valid.csv', float_format='%.6f', index=False)
 
     sub['target'] = y_test_pred
     d = datetime.now().strftime("%Y%m%d_%H%M%S")

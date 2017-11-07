@@ -65,13 +65,8 @@ def target_encode(trn_series=None,    # Revised to encode validation series
     return add_noise(ft_trn_series, noise_level), add_noise(ft_val_series, noise_level), add_noise(ft_tst_series, noise_level)
 
 
-def smoothing():
+def smoothing(train_df,test_df):
 
-    dataCls = DataModelClass()
-
-    train_df = dataCls.readTrain()
-    sub_df = dataCls.readSampleSub()
-    test_df = dataCls.readTest()
 
     train_features = [
         "ps_car_13",  #            : 1571.65 / shadow  609.23
