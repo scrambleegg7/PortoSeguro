@@ -947,14 +947,14 @@ def main():
     valid_df = pd.DataFrame()
     valid_df["id"] = gptrain.id
     valid_df["target"] = y_valid
-    valid_df.to_csv('output/gpari_valid.csv',index=None,float_format='%.6f')
+    valid_df.to_csv('output/gpari_valid_2.csv',index=None,float_format='%.6f')
 
 
 
     basic = dataCls.readSampleSub()
     #basic = pd.read_csv(strdirectory+'sample_submission.csv')
     basic.target = GPAri(gptest).ravel()
-    basic.to_csv('output/gpari.csv',index=None,float_format='%.6f')
+    basic.to_csv('output/gpari_2.csv',index=None,float_format='%.6f')
     print('Finished')
 
 

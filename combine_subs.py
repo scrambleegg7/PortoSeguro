@@ -20,8 +20,9 @@ base_lgb="xgbmodel/output/model22_lgb_20171023_111920.csv" # stacknet preds
 #base_xgb="xgbmodel/output/model41_xgb_submit.csv" # stacknet preds
 
 # Nov. 4th new xgb model .. log odds
-base_xgb="xgbmodel/output/model41_xgb_submit_20171104_094529.csv" # stacknet preds
-
+#base_xgb="xgbmodel/output/model41_xgb_submit_20171104_094529.csv" # stacknet preds
+# Nov.8th BaggingClassifier
+base_xgb="xgbmodel/output/model43_xgb_submit_20171108_002616.csv" # stacknet preds
 
 ensamble="ensamble/output/stacked_1_20171023_233558.csv"
 ensamble2="ensamble/output/stacked_2_20171101_124642.csv"
@@ -35,7 +36,7 @@ print("xgb:",base_xgb_df.shape)
 base_catb_df = pd.read_csv(catb)
 print(base_catb_df.shape)
 
-ensamble_df = pd.read_csv(ensamble2)
+ensamble_df = pd.read_csv(ensamble)
 print("ensamble:",ensamble_df.shape)
 gp_df = pd.read_csv(gp)
 print("gp:",gp_df.shape)
@@ -49,8 +50,12 @@ print("gp:",gp_df.shape)
 #                        1. / base_xgb_df["target"].values )
 
 # LB 0.285 -- Oct. 30th 2017
-sub["target"] = (gp_df["target"].values * .201 +  ensamble_df["target"].values * .301 +
-                         base_xgb_df["target"].values * .5 )
+#sub["target"] = (gp_df["target"].values * .201 +  ensamble_df["target"].values * .301 +
+#                         base_xgb_df["target"].values * .5 )
+
+sub["target"] = (gp_df["target"].values * .201 +  ensamble_df["target"].values * .401 +
+                         base_xgb_df["target"].values * .4 )
+
 
 #sub["target"] = (gp_df["target"].values * .32 +  ensamble_df["target"].values * .521 +
 #                         base_xgb_df["target"].values * .25 + base_catb_df["target"] * .25 )

@@ -173,4 +173,4 @@ print("Create submission file")
 sub['target'] = y_test_pred
 
 d = datetime.now().strftime("%Y%m%d_%H%M%S")
-sub.to_csv('output/model41_xgb_submit_{}.csv'.format(d), float_format='%.6f', index=False)
+sub.to_csv('output/model43_xgb_submit_{}.csv'.format(d), float_format='%.6f', index=False)

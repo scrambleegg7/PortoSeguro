@@ -172,11 +172,11 @@ def process2(train,test):
     val = pd.DataFrame()
     val['id'] = id_train
     val['target'] = y_valid_pred.values
-    val.to_csv('output/model31_xgb_valid.csv', float_format='%.6f', index=False)
+    val.to_csv('output/model32_xgb_valid.csv', float_format='%.6f', index=False)
 
     sub['target'] = y_test_pred
     d = datetime.now().strftime("%Y%m%d_%H%M%S")
-    sub.to_csv('output/model31_catb_{}.csv.gz'.format(d), index=False, float_format='%.5f',compression="gzip")
+    sub.to_csv('output/model32_catb_{}.csv.gz'.format(d), index=False, float_format='%.5f',compression="gzip")
 
 def main():
 
