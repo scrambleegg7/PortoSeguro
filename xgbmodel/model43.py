@@ -71,7 +71,7 @@ def add_noise(series, noise_level):
 dataCls = DataModelClass()
 
 train_df = dataCls.readTrain()
-sub_df = dataCls.readSampleSub()
+sub = dataCls.readSampleSub()
 test_df = dataCls.readTest()
 
 # Process data
