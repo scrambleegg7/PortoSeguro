@@ -33,6 +33,9 @@ from PortoSeguro.Feat.smoothing_feat import smoothing
 from PortoSeguro.Feat.smoothing_feat import target_encode
 from PortoSeguro.Feat.smoothing_feat import add_noise
 
+from PortoSeguro.Feat.load_znullSum import load_data
+from PortoSeguro.Feat.load_sub import load_sub
+
 
 # hyperopt for tuning xgboost parameters
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
@@ -47,17 +50,16 @@ def gini_xgb(preds, dtrain):
 
 
 dataCls = DataModelClass()
-train_df = dataCls.readTrain()
-test_df = dataCls.readTest()
+#train_df = dataCls.readTrain()
+#test_df = dataCls.readTest()
 sub = dataCls.readSampleSub()
 
-# Process data
-id_train = train_df['id'].values
-id_test = test_df['id'].values
+#X, y, test_df = smoothing(train_df,test_df)
+train_df, y, test_df = load_data()
+id_train = train_df["id"]
 
 
-X, y, test_df = smoothing(train_df,test_df)
-
+X = train_df.drop(["id","target"],axis=1)
 
 f_cats = [f for f in X.columns if "_cat" in f]
 
@@ -86,16 +88,16 @@ def score(params):
         print( "\nFold ", i)
 
         # Enocode data
-        for f in f_cats:
-            X_train[f + "_avg"], X_valid[f + "_avg"], X_test[f + "_avg"] = target_encode(
-                                                            trn_series=X_train[f],
-                                                            val_series=X_valid[f],
-                                                            tst_series=X_test[f],
-                                                            target=y_train,
-                                                            min_samples_leaf=200,
-                                                            smoothing=10,
-                                                            noise_level=0
-                                                            )
+        #for f in f_cats:
+        #    X_train[f + "_avg"], X_valid[f + "_avg"], X_test[f + "_avg"] = target_encode(
+        #                                                    trn_series=X_train[f],
+        #                                                    val_series=X_valid[f],
+        #                                                    tst_series=X_test[f],
+        #                                                    target=y_train,
+        #                                                    min_samples_leaf=200,
+        #                                                    smoothing=10,
+        #                                                    noise_level=0
+        #                                                    )
 
         model = XGBClassifier(
                                 n_estimators=MAX_ROUNDS,
@@ -127,6 +129,7 @@ def score(params):
             fit_model = model.fit( X_train, y_train )
 
         pred = fit_model.predict_proba(X_valid)[:,1]
+        y_valid_pred[test_index] = pred
         print( "  Best Gini = %.6f " % (eval_gini(y_valid, pred)) )
 
         score = eval_gini(y_valid, pred)
@@ -135,11 +138,19 @@ def score(params):
     Average_best_score = np.average(Score)
     print("\tAvg. Score {0}\n\n".format(Average_best_score) )
 
+
+    print("Save validation predictions for stacking/ensembling")
+    val = pd.DataFrame()
+    val['id'] = id_train
+    val['target'] = y_valid_pred.values
+    d = datetime.now().strftime("%Y%m%d_%H%M%S")
+    val.to_csv('output/znull/model42_xgb_hyperopt_valid_{}.csv'.format(d), float_format='%.6f', index=False)
+
     param_df = pd.DataFrame([params])
     params["Score"] = Average_best_score
     str_score = str(Average_best_score)
     d = datetime.now().strftime("%Y%m%d_%H%M%S")
-    param_df.to_csv('output/model42_xgb_hyperopt_params_{}_{}.csv'.format( str_score,d), index=False)
+    param_df.to_csv('output/znull/model42_xgb_hyperopt_params_{}_{}.csv'.format( str_score,d), index=False)
 
     return {'loss': Average_best_score, 'status': STATUS_OK}
 
@@ -165,7 +176,7 @@ def optimize(trials):
         "reg_lambda" : hp.quniform('reg_lambda',1, 3,0.05),
         'silent' : 1}
 
-    best = fmin(score, space, algo=tpe.suggest, trials=trials, max_evals=200)
+    best = fmin(score, space, algo=tpe.suggest, trials=trials, max_evals=100)
     print("best parameters",best)
 
 trials = Trials()
