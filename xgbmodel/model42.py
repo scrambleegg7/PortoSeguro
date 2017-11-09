@@ -30,7 +30,7 @@ from datetime import datetime
 from PortoSeguro.DataModelClass import DataModelClass
 from PortoSeguro.gini import eval_gini
 from PortoSeguro.Feat.smoothing_feat import smoothing
-#from PortoSeguro.gini import gini_xgb
+from PortoSeguro.Feat.smoothing_feat import target_encode
 
 #@jit
 #def eval_gini(y_true, y_prob):
@@ -65,12 +65,16 @@ def gini_xgb(preds, dtrain):
 def add_noise(series, noise_level):
     return series * (1 + noise_level * np.random.randn(len(series)))
 
+dataCls = DataModelClass()
 
-X,y,test_df = smoothing()
+train_df = dataCls.readTrain()
+sub_df = dataCls.readSampleSub()
+test_df = dataCls.readTest()
 
-# Process data
 id_test = test_df['id'].values
-id_train = X['id'].values
+id_train = train_df['id'].values
+
+X,y,test_df = smoothing(train_df, test_df)
 
 
 f_cats = [f for f in X.columns if "_cat" in f]
@@ -87,17 +91,17 @@ np.random.seed(0)
 # Set up classifier
 model = XGBClassifier(
                         n_estimators=MAX_ROUNDS,
-                        max_depth=4,
+                        max_depth=8,
                         objective="binary:logistic",
                         learning_rate=LEARNING_RATE,
-                        subsample=.8,
+                        subsample=1.,
 #                        min_child_weight=.77, Oct. 30th
-                        min_child_weight=.6,
-                        colsample_bytree=.8,
-                        scale_pos_weight=1.6,
-                        gamma=10,
-                        reg_alpha=8,
-                        reg_lambda=1.3,
+                        min_child_weight=7.0,
+                        colsample_bytree=.55,
+                        scale_pos_weight=0.85,
+                        gamma=8,
+                        reg_alpha=3,
+                        reg_lambda=1.75,
                      )
 
 
@@ -155,7 +159,7 @@ print("Save validation predictions for stacking/ensembling")
 val = pd.DataFrame()
 val['id'] = id_train
 val['target'] = y_valid_pred.values
-val.to_csv('output/model41_xgb_valid.csv', float_format='%.6f', index=False)
+val.to_csv('output/model42_xgb_valid.csv', float_format='%.6f', index=False)
 
 print("Create submission file")
 sub = pd.DataFrame()
@@ -163,4 +167,4 @@ sub['id'] = id_test
 sub['target'] = y_test_pred
 
 d = datetime.now().strftime("%Y%m%d_%H%M%S")
-sub.to_csv('output/model41_xgb_submit_{}.csv'.format(d), float_format='%.6f', index=False)
+sub.to_csv('output/model42_xgb_submit_{}.csv'.format(d), float_format='%.6f', index=False)
