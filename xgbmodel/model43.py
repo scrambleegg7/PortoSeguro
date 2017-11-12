@@ -165,7 +165,7 @@ print("Save validation predictions for stacking/ensembling")
 val = pd.DataFrame()
 val['id'] = id_train
 val['target'] = y_valid_pred.values
-val.to_csv('output/model41_xgb_valid.csv', float_format='%.6f', index=False)
+val.to_csv('output/model43_xgb_valid.csv', float_format='%.6f', index=False)
 
 print("Create submission file")
 #sub = pd.DataFrame()
