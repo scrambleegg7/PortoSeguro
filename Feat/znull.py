@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from replace_nan import replace_nan
+from PortoSeguro.Feat.replace_nan import replace_nan
 
 def zNullCount(df):
     df = replace_nan(df)

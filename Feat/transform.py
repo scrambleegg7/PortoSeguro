@@ -72,9 +72,9 @@ class Transform(object):
         col = [c for c in new_train_df.columns if c not in ['id','target']]
         col = [c for c in col if not c.startswith('ps_calc_')]
 
-        dups = new_train_df[new_train_df.duplicated(subset=col, keep=False)]
-        print(dups.shape)
-        new_train_df = new_train_df[~(new_train_df['id'].isin(dups['id'].values))]
+        #dups = new_train_df[new_train_df.duplicated(subset=col, keep=False)]
+        #print(dups.shape)
+        #new_train_df = new_train_df[~(new_train_df['id'].isin(dups['id'].values))]
 
         X = new_train_df.drop(["id","target"],axis=1)
         X_test = new_test_df.drop(["id"],axis=1)
